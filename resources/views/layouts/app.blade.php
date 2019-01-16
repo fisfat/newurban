@@ -12,6 +12,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+    <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 
     <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQgnKTnWw7Xp9bfndRqixaHDxx8fobP4wPtewYXdTDt-uV3p45" />
 
@@ -74,11 +75,30 @@
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
-                                   
+                                </div>   
+                            </li> 
+                            <li class="notif-wrap">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    <i data-count="0" class="far fa-lg fa-bell">
+                                        <i class="badge badge-light ">0</i>   
+                                    </i><span class="caret"></span>
+                                </a>
+                                <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <div class="dropdown-item">
+                                            <div class="card wraper">
+                                                <div class="card-header">
+                                                    <small class="text-center">NOTIFICATIONS (<span class="notif-count">0</span>)</small>
+                                                </div>
+                                                <div class="card-body">
+
+                                                </div>
+                                            </div>
+                                        </div>
                                 </div>
-                                 
-                            </li>
-                           
+                                {{-- <div class="dropdown-toolbar-actions">
+                                        <a href="#">Mark all as read</a>
+                                </div> --}}
+                            </li> 
                         @endguest
                     </ul>
                 </div>
@@ -109,6 +129,7 @@
         <p>Footer</p>
     </footer>
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script>
   var editor_config = {
     path_absolute : "/",
@@ -144,6 +165,20 @@
   };
 
   tinymce.init(editor_config);
+
+        pusher.logToConsole = true;
+        var pusher = new Pusher('312f996ef161d2be5d75', {
+            cluster: 'eu',
+            encrypted: true
+            });
+        
+            //Also remember to change channel and event name if your's are different.
+            var channel = pusher.subscribe('my-channel');
+            channel.bind('my-event', function(data) {
+                alert(JSON.stringify(data));
+            });
+      });
+
 </script>
 </body>
 </html>

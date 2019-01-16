@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\signup;
 
+use App\Events\Restriction;
+
 class AdminController extends Controller
 {
      /**
@@ -98,7 +100,8 @@ class AdminController extends Controller
         $updateuser = User::find($user->id);
         
         if(Auth::user()->id != $user->id){
-            if($request->has('deactivate')){   
+            if($request->has('deactivate')){  
+                event( new Restriction($theuser)); 
                 $updateuser->active = $user->active == true ? false : true;
             }elseif($request->has('submit')){
                 $updateuser->role_id = $user_role_id == 1 ? 2 : 1;

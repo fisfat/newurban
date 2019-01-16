@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ArticlePosted;
+
+use App\Notifications\ArticlePosted as ArticlePostedNotification;
 
 class ArticlesController extends Controller
 {   
@@ -21,6 +24,8 @@ class ArticlesController extends Controller
     public function __construct()
     {
         $this->middleware('isAdmin')->except('index', 'show');
+        
+        
     }
     /**
      * Display a listing of the resource.
@@ -31,7 +36,9 @@ class ArticlesController extends Controller
     {
         $articles = Article::orderBy('id', 'desc')->paginate(15);
         
-        //dump($articles);
+        $user = User::find(Auth::user()->id);
+        $user->notify( new ArticlePostedNotification($user) );
+        
         return view('articles.index', ['articles'=>$articles]);
     }
 
@@ -168,9 +175,11 @@ class ArticlesController extends Controller
         $article->title = $request->input('title');
         $article->body = $request->input('content');
         $article->image = $filenametostore;
-        
 
-        if($article->save()) return redirect()->back()->withSuccess('Changes successfully made.');
+        $update = $article->save();
+        event( new ArticlePosted($update));
+
+        if($update) return redirect()->back()->withSuccess('Changes successfully made.');
     }
 
     /**
@@ -186,5 +195,14 @@ class ArticlesController extends Controller
         $article->delete();
 
         return redirect()->back()->withSuccess('Article successfully deleted');
+    }
+
+    public function arrayinput(Request $request){
+        for ($i=0; $i < count($request->msg); $i++) { 
+            dd($request->pool);
+        }
+    }
+    public function arrayinputget(){
+        return view('articles.arrayinput');
     }
 }
